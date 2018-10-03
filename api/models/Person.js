@@ -15,9 +15,10 @@ module.exports = {
     name: {
       type: "string"
     },
+    
     age: {
-      type: "string"
-    }
+      type: "number"
+    },
 
     //  ╔═╗╔╦╗╔╗ ╔═╗╔╦╗╔═╗
     //  ║╣ ║║║╠╩╗║╣  ║║╚═╗
