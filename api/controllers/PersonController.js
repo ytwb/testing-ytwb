@@ -46,19 +46,18 @@ module.exports = {
     // action - delete 
     delete: async function (req, res) {
 
-        if (req.method == "POST") {
-            const pid = parseInt(req.params.id) || -1;
-
-            var models = await Person.destroy(pid).fetch();
-
-            if (models.length > 0)
-                return res.send("Person Deleted.");
-            else
-                return res.send("Person not found.");
-
-        } else {
-            return res.send("Request Forbidden"); //can't use get method
-        }
+        if (req.method == "GET") return res.forbidden();
+    
+        var message = Person.getInvalidIdMsg(req.params);
+    
+        if (message) return res.badRequest(message);
+    
+        var models = await Person.destroy(req.params.id).fetch();
+    
+        if (models.length == 0) return res.notFound();
+    
+        return res.ok("Person Deleted.");
+    
     },
 
     // action - update
