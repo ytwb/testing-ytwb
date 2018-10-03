@@ -47,48 +47,48 @@ module.exports = {
     delete: async function (req, res) {
 
         if (req.method == "GET") return res.forbidden();
-    
+
         var message = Person.getInvalidIdMsg(req.params);
-    
+
         if (message) return res.badRequest(message);
-    
+
         var models = await Person.destroy(req.params.id).fetch();
-    
+
         if (models.length == 0) return res.notFound();
-    
+
         return res.ok("Person Deleted.");
-    
+
     },
 
     // action - update
     update: async function (req, res) {
 
         var message = Person.getInvalidIdMsg(req.params);
-    
+
         if (message) return res.badRequest(message);
-    
+
         if (req.method == "GET") {
-    
+
             var model = await Person.findOne(req.params.id);
-    
+
             if (!model) return res.notFound();
-    
+
             return res.view('person/update', { 'person': model });
-    
+
         } else {
-    
+
             if (typeof req.body.Person === "undefined")
                 return res.badRequest("Form-data not received.");
-    
+
             var models = await Person.update(req.params.id).set({
                 name: req.body.Person.name,
                 age: req.body.Person.age
             }).fetch();
-    
+
             if (models.length == 0) return res.notFound();
-    
+
             return res.ok("Record updated");
-    
+
         }
     },
 
@@ -96,26 +96,27 @@ module.exports = {
     search: async function (req, res) {
 
         const qName = req.query.name || "";
-        const qAge = req.query.age || "";
+        const qAge = parseInt(req.query.age);
 
-        if (qAge == "") {
+        if (isNaN(qAge)) {
 
-            var persons = await Person.find()
-                .where({ name: { contains: qName } })
-                .sort('name');
-
-            return res.view('person/index', { 'persons': persons });
+            var persons = await Person.find({
+                where: { name: { contains: qName } },
+                sort: 'name'
+            });
 
         } else {
 
-            var persons = await Person.find()
-                .where({ name: { contains: qName } })
-                .where({ age: qAge })
-                .sort('name');
+            var persons = await Person.find({
+                where: { name: { contains: qName }, age: qAge },
+                sort: 'name'
+            });
 
-            return res.view('person/index', { 'persons': persons });
         }
+
+        return res.view('person/index', { 'persons': persons });
     },
+
 
     // action - paginate
     paginate: async function (req, res) {
