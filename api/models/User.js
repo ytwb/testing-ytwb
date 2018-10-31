@@ -9,8 +9,20 @@ module.exports = {
 
   attributes: {
     username: {
+      type: "string",
+      unique: true,
+      required: true
+    },
+
+    password: {
       type: "string"
     },
+
+    role: {
+      type: 'string',
+      enum: ['admin', 'tester', 'visitor'],
+      defaultsTo: 'visitor'
+  },
 
     supervises: {
       collection: 'Person',
